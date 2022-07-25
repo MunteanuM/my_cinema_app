@@ -1,5 +1,6 @@
 from django import forms
 
+
 class CreateNewMessage(forms.Form):
     name = forms.CharField(label="Name", max_length=200)
     email = forms.CharField(label="email", max_length=200)

@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .forms import CreateNewMessage
+from django.views.generic import ListView
 
 # from .models import ToDoList, Item
 
@@ -21,3 +22,8 @@ def contact(response):
 
 def films(response):
     return render(response, 'basepage/films.html', {})
+
+
+
+
+

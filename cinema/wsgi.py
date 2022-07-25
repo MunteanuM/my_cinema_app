@@ -1,3 +1,4 @@
+
 """
 WSGI config for cinema project.
 
@@ -14,3 +15,5 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'cinema.settings')
 
 application = get_wsgi_application()
+
+
