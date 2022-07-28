@@ -24,3 +24,14 @@ class Cinema_Hall(models.Model):
     name = models.CharField(max_length=200)
     seats = models.PositiveIntegerField()
     description = models.CharField(max_length=200)
+
+class Contact(models.Model):
+    name = models.CharField("Name", max_length=200)
+    email = models.CharField("email", max_length=200)
+    phone_number = models.CharField("Phone Number", max_length=20)
+    city = models.CharField("City", max_length=200)
+    subject = models.CharField("Subject", max_length=200)
+    message = models.CharField("Message", max_length=200)
+
+    def __str__(self):
+        return self.name

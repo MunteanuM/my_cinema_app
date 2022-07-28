@@ -3,9 +3,14 @@
 <h1>
     Please complete the fields and submit the message
 </h1>
-<form method="post" action="/contact/">
+{%if submitted%}
+    Message sent
+{%else%}
+
+<form method="POST" action="/contact/">
     {% csrf_token %}
     {{form.as_ul}}
     <button type="submit" name="save">Send message</button>
 </form>
+{%endif%}
 {%endblock%}
