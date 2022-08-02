@@ -1,0 +1,48 @@
+{% load static %}
+<html>
+
+    <h1>
+        <a href="http://127.0.0.1:8000/home/">home</a>|<a href="http://127.0.0.1:8000/films/">films</a>|<a href="http://127.0.0.1:8000/contact/">contact</a>
+    </h1>
+
+<body>
+
+<p>
+    {% block content %}
+    basepagetemplate
+    {% endblock %}
+</p>
+
+</body>
+<footer>
+<a href="https://www.facebook.com/Pentalog">
+        <img src="{% static 'images/facebook.png'%}" width="30" height="30">
+ </a>
+
+    <a href="https://www.instagram.com/pentalog.official/">
+        <img src= "{% static 'images/instagram.png'%}"
+             width="30" height="30">
+ </a>
+
+    <a href="https://twitter.com/Pentalog">
+        <img src= "{% static 'images/twitter.png'%}"
+             width=30" height="30">
+ </a>
+</footer>
+<footer>
+    {%if messages%}
+{%for message in messages%}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{message}}
+</div>
+{%endfor%}
+{%endif%}
+    {%if user.is_authenticated%}
+
+    <a href="{% url 'logout_user' %}">logout</a>
+
+    {%else%}
+    <a href="{% url 'login_user' %}">login</a>
+    {%endif%}
+</footer>
+</html>

@@ -1,0 +1,25 @@
+<html>
+
+{%if messages%}
+{%for message in messages%}
+<div class="alert alert-warning alert-dismissible fade show" role="alert">
+  {{message}}
+</div>
+{%endfor%}
+{%endif%}
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="userlabel">Username</label>
+        <input type="text" class="form-control" name="username" id="userlabel" aria-describedby="emailHelp" placeholder="Enter Username">
+    </div>
+    <div class="form-group">
+        <label for="passwordlabel">Password</label>
+        <input type="password" class="form-control" name="password" id="passwordlabel" placeholder="Password">
+    </div>
+    <button type="submit" class="btn btn-primary">Log In</button>
+</form>
+
+<a href="http://127.0.0.1:8000/login/">Sign up</a>
+
+</html>
