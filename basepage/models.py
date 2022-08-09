@@ -1,5 +1,6 @@
-
 from django.db import models
+
+
 # Create your models here.
 
 
@@ -8,7 +9,7 @@ class Movie(models.Model):
     title = models.CharField(max_length=300)
     release_year = models.CharField(max_length=100)
     certificate = models.CharField(max_length=100)
-    runtime = models.CharField(max_length= 100)
+    runtime = models.CharField(max_length=100)
     genre = models.CharField(max_length=200)
     imdb_rating = models.CharField(max_length=100)
     description = models.TextField()
@@ -22,17 +23,38 @@ class Movie(models.Model):
     gross_earnings = models.CharField(max_length=100)
 
 
+class SeatModel(models.Model):
+    available = models.BooleanField()
+    name = models.CharField(max_length=200)
+
+
+class CinemaHall(models.Model):
+    name = models.CharField(max_length=200)
+    seats = models.ForeignKey(SeatModel, on_delete=models.SET_NULL, null=True)
+    description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
 class Cinema(models.Model):
-    city = models.CharField(max_length=200)
     address = models.CharField(max_length=200)
-    hall = models.CharField(max_length=200)
+    # hall = models.CharField(max_length=200)
+    hall = models.ForeignKey(CinemaHall, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
 
-class Cinema_Hall(models.Model):
-    name = models.CharField(max_length=200)
-    seats = models.PositiveIntegerField()
-    description = models.CharField(max_length=200)
+    def __str__ (self):
+        return self.name
+
+
+class City(models.Model):
+    city = models.CharField(max_length=200)
+    cinemas = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.city
+
 
 class Contact(models.Model):
     name = models.CharField("Name", max_length=200)
@@ -44,3 +66,10 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UploadCsv(models.Model):
+    file = models.CharField("file", max_length=300)
+
+    def __str__(self):
+        return self.file

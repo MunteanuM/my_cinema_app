@@ -5,11 +5,11 @@ This week's films...
     <br>
     {%for movie in movies%}
     <br>
-        {{movie.title}}<br>
-        <img src= {{movie.poster}}
+        {{movie.movie.title}}<br>
+        <img src= {{movie.movie.poster}}
              width=70" height="100">
         <br>
-        {{movie.description}}
+        {{movie.movie.description}}
     <br>
     <br>
     {%endfor%}

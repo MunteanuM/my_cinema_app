@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'basepage',
     'app_users',
+    'Schedule_app',
 ]
 
 MIDDLEWARE = [

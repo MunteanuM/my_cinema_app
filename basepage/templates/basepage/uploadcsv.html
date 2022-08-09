@@ -7,9 +7,9 @@
     Message sent
 {%else%}
 
-<form method="POST" action="/contact/" >
+<form method="POST" action="/upload_csv/" enctype="multipart/form-data">
     {% csrf_token %}
-    {{form.as_ul}}
+    {{form.as_p}}
     <button type="submit" name="save">Send message</button>
 </form>
 {%endif%}

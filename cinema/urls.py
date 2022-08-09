@@ -21,5 +21,6 @@ urlpatterns = [
     path('', include('basepage.urls')),
     path('users/', include('django.contrib.auth.urls')),
     path('users/',include('app_users.urls')),
+    path('schedule_movie/', include('Schedule_app.urls'))
 
 ]

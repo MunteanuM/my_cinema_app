@@ -1,0 +1,13 @@
+<h1>
+    Schedule a movie
+</h1>
+{%if submitted%}
+    Done...
+{%else%}
+
+<form method="POST" action="/schedule_movie/" >
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" name="save">Send message</button>
+</form>
+{%endif%}
