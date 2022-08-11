@@ -20,4 +20,4 @@ class ScheduleMovieCinema(models.Model):
     playing = models.DateTimeField(null=True)
 
     def __str__(self):
-        return self.cinema.name
+        return f"{self.city.city} {self.cinema.name} {self.hall.name} {self.movie} {self.playing}"

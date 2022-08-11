@@ -1,6 +1,5 @@
 from django.db import models
 
-
 # Create your models here.
 
 
@@ -22,25 +21,22 @@ class Movie(models.Model):
     votes = models.CharField(max_length=100)
     gross_earnings = models.CharField(max_length=100)
 
-
-class SeatModel(models.Model):
-    available = models.BooleanField()
-    name = models.CharField(max_length=200)
+    def __str__(self):
+        return self.title
 
 
-class CinemaHall(models.Model):
-    name = models.CharField(max_length=200)
-    seats = models.ForeignKey(SeatModel, on_delete=models.SET_NULL, null=True)
-    description = models.CharField(max_length=200)
+class City(models.Model):
+    city = models.CharField(max_length=200)
+    # cinemas = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
-        return self.name
+        return self.city
 
 
 class Cinema(models.Model):
     address = models.CharField(max_length=200)
     # hall = models.CharField(max_length=200)
-    hall = models.ForeignKey(CinemaHall, on_delete=models.SET_NULL, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
 
@@ -48,12 +44,19 @@ class Cinema(models.Model):
         return self.name
 
 
-class City(models.Model):
-    city = models.CharField(max_length=200)
-    cinemas = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
+class CinemaHall(models.Model):
+    name = models.CharField(max_length=200)
+    cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
+    description = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.city
+        return self.name
+
+
+class SeatModel(models.Model):
+    available = models.BooleanField()
+    name = models.CharField(max_length=200)
+    hall = models.ForeignKey(CinemaHall, on_delete=models.SET_NULL, null=True)
 
 
 class Contact(models.Model):

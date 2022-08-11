@@ -1,0 +1,27 @@
+{% load widget_tweaks %}
+
+<h1>
+    Book a ticket
+</h1>
+
+{{form.city.label_tag}}
+{% render_field form.city class="custom-select mb-4" autocomplete="off" hx-get="/cinema/" hx-target="#id_cinema"%}
+
+
+    {{form.cinema.label_tag}}
+    {% render_field form.cinema class="custom-select mb-4" autocomplete="off"%}
+
+<!--{% if submitted %}
+Done...
+{% endif %}
+
+{%if logedin%}
+    <form method="POST" action="/book_ticket/" >
+    {% csrf_token %}
+    {{form.as_p}}
+    <button type="submit" name="save">Send message</button>
+</form>
+{%else%}
+Log in first...
+{%endif%}
+-->
