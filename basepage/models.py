@@ -1,29 +1,63 @@
-
 from django.db import models
 
 # Create your models here.
 
 
 class Movie(models.Model):
-    name = models.CharField(max_length=200)
     poster = models.URLField()
+    title = models.CharField(max_length=300)
+    release_year = models.CharField(max_length=100)
+    certificate = models.CharField(max_length=100)
+    runtime = models.CharField(max_length=100)
+    genre = models.CharField(max_length=200)
+    imdb_rating = models.CharField(max_length=100)
     description = models.TextField()
-    imdb_link = models.URLField()
-    imdb_id = models.CharField(max_length=200)
-    trailer_url = models.URLField()
-    length = models.TimeField()
+    meta_score = models.CharField(max_length=100)
+    film_director = models.CharField(max_length=300)
+    star1 = models.CharField(max_length=300)
+    star2 = models.CharField(max_length=300)
+    star3 = models.CharField(max_length=300)
+    star4 = models.CharField(max_length=300)
+    votes = models.CharField(max_length=100)
+    gross_earnings = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.title
+
+
+class City(models.Model):
+    city = models.CharField(max_length=200)
+    # cinemas = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
+
+    def __str__(self):
+        return self.city
+
 
 class Cinema(models.Model):
-    city = models.CharField(max_length=200)
     address = models.CharField(max_length=200)
-    hall = models.CharField(max_length=200)
+    # hall = models.CharField(max_length=200)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
 
-class Cinema_Hall(models.Model):
+    def __str__ (self):
+        return self.name
+
+
+class CinemaHall(models.Model):
     name = models.CharField(max_length=200)
-    seats = models.PositiveIntegerField()
+    cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
     description = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.name
+
+
+class SeatModel(models.Model):
+    available = models.BooleanField()
+    name = models.CharField(max_length=200)
+    hall = models.ForeignKey(CinemaHall, on_delete=models.SET_NULL, null=True)
+
 
 class Contact(models.Model):
     name = models.CharField("Name", max_length=200)
@@ -35,3 +69,10 @@ class Contact(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class UploadCsv(models.Model):
+    file = models.CharField("file", max_length=300)
+
+    def __str__(self):
+        return self.file
