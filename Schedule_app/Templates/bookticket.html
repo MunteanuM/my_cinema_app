@@ -2,26 +2,29 @@
 
 <h1>
     Book a ticket
+    <script src="https://unpkg.com/htmx.org@1.6.0"></script>
+
 </h1>
 
-{{form.city.label_tag}}
-{% render_field form.city class="custom-select mb-4" autocomplete="off" hx-get="/cinema/" hx-target="#id_cinema"%}
-
-
-    {{form.cinema.label_tag}}
-    {% render_field form.cinema class="custom-select mb-4" autocomplete="off"%}
-
-<!--{% if submitted %}
-Done...
-{% endif %}
-
-{%if logedin%}
-    <form method="POST" action="/book_ticket/" >
+<form action = "" method = "POST">
     {% csrf_token %}
-    {{form.as_p}}
-    <button type="submit" name="save">Send message</button>
-</form>
-{%else%}
-Log in first...
-{%endif%}
--->
+{{form.city.label_tag}}
+{% render_field form.city class="custom-select mb-4" autocomplete="off" hx-trigger="change, load"  hx-get="/book_ticket/cinema/" hx-target="#id_cinema"%}
+
+<br>
+{{form.cinema.label_tag}}
+{% render_field form.cinema class="custom-select mb-4" autocomplete="off" hx-trigger="change, load" hx-include="[name=city]" hx-get="/book_ticket/movie/" hx-target="#id_movie"%}
+
+<br>
+{{form.movie.label_tag}}
+{% render_field form.movie class="custom-select mb-4" autocomplete="off" hx-trigger="change, load" hx-include="[name=city],[name=cinema]" hx-get="/book_ticket/hall/" hx-target="#id_hall"%}
+
+<br>
+{{form.hall.label_tag}}
+{% render_field form.hall class="custom-select mb-4" autocomplete="off" hx-trigger="change, load" hx-include="[name=city],[name=cinema],[name=movie]" hx-get="/book_ticket/time/" hx-target="#id_time"%}
+
+<br>
+{{form.time.label_tag}}
+{% render_field form.time class="custom-select mb-4" autocomplete="off"%}
+
+    </form>

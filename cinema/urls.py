@@ -22,6 +22,7 @@ urlpatterns = [
     path('users/', include('django.contrib.auth.urls')),
     path('users/', include('app_users.urls')),
     # path('schedule_movie/', include('Schedule_app.urls'))
-    path('book_ticket/', include('Schedule_app.urls'))
+    path('book_ticket/', include('Schedule_app.urls')),
+
 
 ]

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'basepage',
     'app_users',
     'Schedule_app',
+    'django_htmx',
 
 ]
 

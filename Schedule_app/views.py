@@ -40,22 +40,29 @@ def bookticket(response):
         form = TicketBookForm()
         context = {'form': form}
         return render(response, 'bookticket.html', context)
-    # submitted = False
-    # if response.method == "POST":
-    #     form = TicketBookForm(response.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #         return HttpResponseRedirect('/book_ticket?submitted=True')
-    # else:
-    #     form = TicketBookForm
-    #     if 'submitted' in response.GET:
-    #         submitted = True
-    # return render(response, 'bookticket.html', {"form": form, 'submitted': submitted, 'logedin': True})
     else:
         return render(response, 'bookticket.html', {'logedin': False})
 
 
 def cinema(response):
     form = TicketBookForm(response.GET)
-    print(form['cinema'])
+    print(response.GET)
     return HttpResponse(form['cinema'])
+
+
+def movie(response):
+    form = TicketBookForm(response.GET)
+    print(response.GET)
+    return HttpResponse(form['movie'])
+
+
+def hall(response):
+    form = TicketBookForm(response.GET)
+    print(response.GET)
+    return HttpResponse(form['hall'])
+
+
+def time(response):
+    form = TicketBookForm(response.GET)
+    print(response.GET)
+    return HttpResponse(form['time'])
