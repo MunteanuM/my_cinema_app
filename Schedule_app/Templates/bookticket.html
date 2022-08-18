@@ -6,7 +6,7 @@
 
 </h1>
 
-<form action = "" method = "POST">
+<form action = "{% url 'seats' %}" method = "POST">
     {% csrf_token %}
 {{form.city.label_tag}}
 {% render_field form.city class="custom-select mb-4" autocomplete="off" hx-trigger="change, load"  hx-get="/book_ticket/cinema/" hx-target="#id_cinema"%}
@@ -27,4 +27,6 @@
 {{form.time.label_tag}}
 {% render_field form.time class="custom-select mb-4" autocomplete="off"%}
 
+<br>
+    <button type="submit" name="save">Next</button>
     </form>

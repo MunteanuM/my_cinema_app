@@ -1,5 +1,10 @@
 from django.db import models
-from basepage.models import Movie, Cinema, CinemaHall, City
+from basepage.models import Movie, Cinema, CinemaHall, City, SeatModel
+from django.contrib.auth.models import User
+from django.core.validators import validate_comma_separated_integer_list
+
+
+
 # Create your models here.
 
 
@@ -21,3 +26,11 @@ class ScheduleMovieCinema(models.Model):
 
     def __str__(self):
         return f"{self.city.city} {self.cinema.name} {self.hall.name} {self.movie} {self.playing}"
+
+
+class BookTicket(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    schedule = models.ForeignKey(ScheduleMovieCinema, on_delete=models.SET_NULL, null=True)
+    seats = models.CharField(validators=[validate_comma_separated_integer_list], max_length=200,
+                             blank=True, null=True, default='')
+

@@ -1,7 +1,9 @@
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from .forms import CreateSchedule, CreateScheduleCinema, TicketBookForm
 from django.contrib.auth.models import User
+from .models import ScheduleMovieCinema, BookTicket
+from basepage.models import SeatModel
 
 
 # Create your views here.
@@ -46,23 +48,65 @@ def bookticket(response):
 
 def cinema(response):
     form = TicketBookForm(response.GET)
-    print(response.GET)
     return HttpResponse(form['cinema'])
 
 
 def movie(response):
     form = TicketBookForm(response.GET)
-    print(response.GET)
     return HttpResponse(form['movie'])
 
 
 def hall(response):
     form = TicketBookForm(response.GET)
-    print(response.GET)
     return HttpResponse(form['hall'])
 
 
 def time(response):
     form = TicketBookForm(response.GET)
-    print(response.GET)
     return HttpResponse(form['time'])
+
+
+def seats(response):
+    if response.user.is_authenticated:
+        data = response.POST
+
+        schedule = ScheduleMovieCinema.objects.filter(city=data['city'], cinema=data['cinema'], movie=data['movie'],
+                                                      hall=data['hall'], playing=data['time']).values()
+        print(schedule[0]['id'])
+        seats_context = SeatModel.objects.filter(name__icontains='city{}'.format(data['city'])). \
+            filter(name__icontains='cinema{}'.format(data['cinema'])) \
+            .filter(name__icontains='hall{}'.format(data['hall'])). \
+            order_by('id').values()
+        reserved_seats = BookTicket.objects.filter(schedule=schedule[0]['id']).values()
+
+        for seat in seats_context:
+            for i in range(len(reserved_seats)):
+                if str(seat['id']) in reserved_seats[i]['seats']:
+                    seat['available'] = False
+        return render(response, 'chooseseat.html', {'seats': seats_context,
+                                                    'reserved_seats': reserved_seats,
+                                                    'schedule': schedule[0]['id']})
+    else:
+        return render(response, 'chooseseat.html', {'logedin': False})
+
+
+def confirmation(response):
+    data = response.POST
+    reservations = []
+    for bookings in data:
+        reservations.append(bookings)
+    reservations.pop(0)
+    reservations.pop(len(reservations) - 1)
+    reservations = SeatModel.objects.filter(name__in=reservations).values_list('id', flat=True)
+    seat_list = ''
+    for seat in reservations:
+        seat_list = seat_list + '{}'.format(seat) + ','
+    seat_list = seat_list[:len(seat_list) - 1]
+    print(seat_list)
+    schedule_id = data['schedule_name']
+    BookTicket.objects.create(
+        seats=seat_list,
+        schedule_id=schedule_id,
+        user_id=response.user.id
+    )
+    return HttpResponse('Booking succesfull')

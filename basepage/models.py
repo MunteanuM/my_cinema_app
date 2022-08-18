@@ -40,7 +40,7 @@ class Cinema(models.Model):
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
 
-    def __str__ (self):
+    def __str__(self):
         return self.name
 
 
@@ -56,7 +56,10 @@ class CinemaHall(models.Model):
 class SeatModel(models.Model):
     available = models.BooleanField()
     name = models.CharField(max_length=200)
-    hall = models.ForeignKey(CinemaHall, on_delete=models.SET_NULL, null=True)
+    hall = models.ForeignKey(CinemaHall, on_delete=models.SET_NULL, null=True, related_query_name='seatback')
+
+    def __str__(self):
+        return self.name
 
 
 class Contact(models.Model):
