@@ -4,6 +4,8 @@ from .forms import CreateSchedule, CreateScheduleCinema, TicketBookForm
 from django.contrib.auth.models import User
 from .models import ScheduleMovieCinema, BookTicket
 from basepage.models import SeatModel
+from django.core.mail import send_mail
+from django.conf import settings
 
 
 # Create your views here.
@@ -72,7 +74,6 @@ def seats(response):
 
         schedule = ScheduleMovieCinema.objects.filter(city=data['city'], cinema=data['cinema'], movie=data['movie'],
                                                       hall=data['hall'], playing=data['time']).values()
-        print(schedule[0]['id'])
         seats_context = SeatModel.objects.filter(name__icontains='city{}'.format(data['city'])). \
             filter(name__icontains='cinema{}'.format(data['cinema'])) \
             .filter(name__icontains='hall{}'.format(data['hall'])). \
@@ -84,7 +85,7 @@ def seats(response):
                 if str(seat['id']) in reserved_seats[i]['seats']:
                     seat['available'] = False
         return render(response, 'chooseseat.html', {'seats': seats_context,
-                                                    'reserved_seats': reserved_seats,
+                                                    'initial_seat': seats_context[0],
                                                     'schedule': schedule[0]['id']})
     else:
         return render(response, 'chooseseat.html', {'logedin': False})
@@ -102,11 +103,17 @@ def confirmation(response):
     for seat in reservations:
         seat_list = seat_list + '{}'.format(seat) + ','
     seat_list = seat_list[:len(seat_list) - 1]
-    print(seat_list)
     schedule_id = data['schedule_name']
     BookTicket.objects.create(
         seats=seat_list,
         schedule_id=schedule_id,
         user_id=response.user.id
     )
-    return HttpResponse('Booking succesfull')
+    send_mail(
+        subject='Your tickets',
+        message='Here are your tickets for seats {} for this movie: {}'.format(seat_list, ScheduleMovieCinema.objects.
+                                                                               filter(id=schedule_id)[0]),
+        from_email=settings.EMAIL_HOST_USER,
+        recipient_list=[response.user.email]
+    )
+    return HttpResponse('Booking succesfull! Check your email for your confirmation!')

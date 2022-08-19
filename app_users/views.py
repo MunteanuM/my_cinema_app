@@ -33,9 +33,10 @@ def login_user(response):
         else:
 
             messages.success(response, ("Couldn't find your user, please try again!"))
-            return redirect ('login_user')
+            return redirect('login_user')
     else:
-        return render(response,'authentication/login.html', {})
+        return render(response, 'authentication/login.html', {})
+
 
 def logout_user(response):
     logout(response)

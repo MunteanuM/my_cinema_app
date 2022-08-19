@@ -1,8 +1,11 @@
+import datetime
+
 from django import forms
 from django.forms import ModelForm, Select
 from .models import ScheduledMovies, ScheduleMovieCinema
 from basepage.models import City, Cinema, CinemaHall, Movie
 from dynamic_forms import DynamicField, DynamicFormMixin
+from datetime import date
 
 
 class CreateSchedule(ModelForm):
@@ -58,8 +61,9 @@ class TicketBookForm(DynamicFormMixin, forms.Form):
         city = form['city'].value()
         movie = form['movie'].value()
         hall = form['hall'].value()
-        return ScheduleMovieCinema.objects.filter(hall=hall, cinema=cinema, city=city, movie=movie).values_list(
-            'playing', flat=True)
+        return ScheduleMovieCinema.objects.filter(hall=hall, cinema=cinema, city=city, movie=movie,
+                                                  playing__gte=datetime.datetime.now()).values_list(
+                                                 'playing', flat=True)
 
     time = DynamicField(
         forms.ModelChoiceField,
