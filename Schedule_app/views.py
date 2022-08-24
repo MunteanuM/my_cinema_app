@@ -3,9 +3,15 @@ from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from .forms import CreateSchedule, CreateScheduleCinema, TicketBookForm
 from django.contrib.auth.models import User
 from .models import ScheduleMovieCinema, BookTicket
-from basepage.models import SeatModel
+from basepage.models import SeatModel, City, Cinema, CinemaHall
 from django.core.mail import send_mail
 from django.conf import settings
+
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 # Create your views here.
@@ -80,6 +86,8 @@ def seats(response):
             order_by('id').values()
         reserved_seats = BookTicket.objects.filter(schedule=schedule[0]['id']).values()
 
+        print(seats_context[0])
+
         for seat in seats_context:
             for i in range(len(reserved_seats)):
                 if str(seat['id']) in reserved_seats[i]['seats']:
@@ -117,3 +125,27 @@ def confirmation(response):
         recipient_list=[response.user.email]
     )
     return HttpResponse('Booking succesfull! Check your email for your confirmation!')
+
+
+class CinemaList(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, format=None):
+        city_data = request.data['city']
+        cinema_choice = {}
+        if city_data:
+            cinemas = City.objects.get(id=city_data).cinemas.all().order_by('name')
+            cinema_choice = {p.name: p.id for p in cinemas}
+        return JsonResponse(data=cinema_choice, safe=False)
+
+
+class HallList(APIView):
+    permission_classes = [IsAuthenticated, ]
+
+    def post(self, request, format=None):
+        cinema_data = request.data['cinema']
+        hall_choice = {}
+        if cinema_data:
+            halls = Cinema.objects.get(id=cinema_data).halls.all().order_by('name')
+            hall_choice = {p.name: p.id for p in halls}
+        return JsonResponse(data=hall_choice, safe=False)

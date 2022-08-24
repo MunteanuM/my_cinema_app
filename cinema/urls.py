@@ -15,6 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from Schedule_app.views import CinemaList, HallList
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,6 +26,9 @@ urlpatterns = [
     path('users/', include('app_users.urls')),
     # path('schedule_movie/', include('Schedule_app.urls'))
     path('book_ticket/', include('Schedule_app.urls')),
-
+    path('ajax/cinema/', CinemaList.as_view()),
+    path('ajax/hall/', HallList.as_view()),
 
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

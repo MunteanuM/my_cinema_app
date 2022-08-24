@@ -49,6 +49,9 @@ INSTALLED_APPS = [
     'app_users',
     'Schedule_app',
     'django_htmx',
+    'rest_framework',
+    
+
 
 ]
 
@@ -137,6 +140,9 @@ STATIC_URL = 'static/'
 STATIC_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 MEDIA_URL = '/images/'
 # Default primary key field type

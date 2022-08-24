@@ -20,6 +20,7 @@ class CreateScheduleCinema(ModelForm):
         fields = '__all__'
 
 
+
 class TicketBookForm(DynamicFormMixin, forms.Form):
     city = forms.ModelChoiceField(
         queryset=City.objects.all(),
@@ -63,7 +64,7 @@ class TicketBookForm(DynamicFormMixin, forms.Form):
         hall = form['hall'].value()
         return ScheduleMovieCinema.objects.filter(hall=hall, cinema=cinema, city=city, movie=movie,
                                                   playing__gte=datetime.datetime.now()).values_list(
-                                                 'playing', flat=True)
+            'playing', flat=True)
 
     time = DynamicField(
         forms.ModelChoiceField,

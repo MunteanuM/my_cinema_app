@@ -36,7 +36,7 @@ class City(models.Model):
 class Cinema(models.Model):
     address = models.CharField(max_length=200)
     # hall = models.CharField(max_length=200)
-    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True)
+    city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, related_name='cinemas')
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)
 
@@ -46,7 +46,7 @@ class Cinema(models.Model):
 
 class CinemaHall(models.Model):
     name = models.CharField(max_length=200)
-    cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
+    cinema = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True, related_name='halls')
     description = models.CharField(max_length=200)
 
     def __str__(self):
