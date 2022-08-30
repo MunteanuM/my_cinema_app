@@ -1,20 +1,30 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse, QueryDict
+from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.template.loader import render_to_string
+from django.utils.encoding import force_str, force_bytes
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+from django.views import View
+
 from .forms import CreateSchedule, CreateScheduleCinema, TicketBookForm
-from django.contrib.auth.models import User
 from .models import ScheduleMovieCinema, BookTicket
-from basepage.models import SeatModel, City, Cinema, CinemaHall
+from basepage.models import SeatModel, City, Cinema
 from django.core.mail import send_mail
 from django.conf import settings
 
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
 
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
+from django.contrib.auth.models import User
+from django.contrib import messages
+
+
+
 
 # Create your views here.
+from .tokens import reservation_confirmation_token
 
 
 def schedule_movie(response):
@@ -112,19 +122,59 @@ def confirmation(response):
         seat_list = seat_list + '{}'.format(seat) + ','
     seat_list = seat_list[:len(seat_list) - 1]
     schedule_id = data['schedule_name']
-    BookTicket.objects.create(
-        seats=seat_list,
-        schedule_id=schedule_id,
-        user_id=response.user.id
-    )
-    send_mail(
-        subject='Your tickets',
-        message='Here are your tickets for seats {} for this movie: {}'.format(seat_list, ScheduleMovieCinema.objects.
-                                                                               filter(id=schedule_id)[0]),
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=[response.user.email]
-    )
-    return HttpResponse('Booking succesfull! Check your email for your confirmation!')
+    if 'confirmation' in data:
+        BookTicket.objects.create(
+            seats=seat_list,
+            schedule_id=schedule_id,
+            user_id=response.user.id,
+            ui_confirmed=True
+        )
+        send_mail(
+            subject='Your tickets',
+            message='Here are your tickets for seats {} for this movie: {}'.format(seat_list,
+                                                                                   ScheduleMovieCinema.objects.
+                                                                                   filter(id=schedule_id)[0]),
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[response.user.email]
+        )
+        return HttpResponse('Booking succesfull! Check your email for your confirmation!')
+    else:
+       # user = response.user
+       # current_site = get_current_site(response)
+       # subject = 'Confirm your booking'
+       # message = render_to_string('confirmseat.html', {
+       #     'user': user,
+       #     'domain': current_site.domain,
+       #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+       #     'token': reservation_confirmation_token.make_token(user),
+       # })
+       # to_email = user.email
+       # send_mail(
+       #     subject,
+       #     message,
+       #     settings.EMAIL_HOST_USER,
+       #     [to_email]
+       # )
+       # return HttpResponse('Check your email to confirm your seats!')
+       return HttpResponse('please go back and check te box for confimation!')
+
+
+class ConfirmBooking(View):
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = force_str(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and reservation_confirmation_token.check_token(user, token):
+            user.bookticket.email_confirmed=True
+            messages.success(request, ('Your booking has been confirmed.'))
+            return redirect('homepage')
+        else:
+            messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
+            return redirect('homepage')
 
 
 class CinemaList(APIView):

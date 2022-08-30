@@ -30,5 +30,8 @@ var seat = {{seat.id}}
 {% endfor %}
 <br>
      <input type="hidden" id="schedule_id" name="schedule_name" value={{schedule}}>
-<button type="submit" >Confirm Selected Seats</button>
+<button type="submit" >Next</button>
+    <br>
+    <input type="checkbox" id="confirmation" name="confirmation" value="confirmed">
+    <label for="confirmation">By checking this box you confirm the selected seats</label>
 </form>

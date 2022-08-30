@@ -3,15 +3,11 @@ import datetime
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import CreateNewMessage, UploadFile
-from django.views.generic import ListView
 from ratelimit.decorators import ratelimit
-import os
 import csv
-from .models import Movie, SeatModel, MovieTrailer
+from .models import Movie, MovieTrailer
 from django.core.paginator import Paginator
-from django.contrib.auth.models import User
 from Schedule_app.models import ScheduledMovies
-from datetime import date
 
 # from .models import ToDoList, Item
 
