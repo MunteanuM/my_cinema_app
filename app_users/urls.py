@@ -6,8 +6,12 @@ from . import views
 
 urlpatterns = [
     path('login_user/', views.login_user, name="login_user"),
-    path('logout_user/',views.logout_user, name="logout_user"),
-   # path('register_user/', views.register_user, name="register_user"),
+    path('logout_user/', views.logout_user, name="logout_user"),
+    # path('register_user/', views.register_user, name="register_user"),
     path('signup/', SignUpView.as_view(), name='signup'),
     path('activate/<uidb64>/<token>/', ActivateAccount.as_view(), name='activate'),
+    path('newsletter/', views.news_sub, name='newsletter'),
+    path('subscribe/', views.subscribe, name='susbscribe'),
+    path('unsub_newsletter/', views.news_unsub, name='unsub_newsletter'),
+    path('unsubscribe/', views.unsubscribe, name='unsubscribe'),
 ]

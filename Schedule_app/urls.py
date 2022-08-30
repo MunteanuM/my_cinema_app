@@ -14,4 +14,6 @@ urlpatterns = [
     path('time/', views.time, name='time'),
     path('choose_seats/', views.seats, name='seats'),
     path('confirmation/', views.confirmation, name='confirmation'),
+    path('confirmbooking/<uidb64>/<token>/', ConfirmBooking.as_view(), name='confirmbooking'),
+
 ]

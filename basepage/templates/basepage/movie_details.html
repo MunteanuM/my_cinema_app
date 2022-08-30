@@ -1,0 +1,19 @@
+{% extends 'basepage/base.html'%}
+{%block content%}
+{% for i in movie %}
+{{i.title}}
+<br>
+<img src= {{i.poster}}
+             width=70" height="100">
+<br>
+{{i.runtime}} minutes
+<br>
+<a href="{{i.imdb_link}}">imdb link</a>
+<br>
+{% for data in trailer %}
+<iframe src="https://www.imdb.com/video/imdb/{{data.trailer_id}}/imdb/embed?autoplay=false&width=640" width="640" height="360" scrolling="no"></iframe>
+<br>
+{% endfor %}
+{% endfor %}
+
+{% endblock %}

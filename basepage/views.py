@@ -3,15 +3,11 @@ import datetime
 from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import CreateNewMessage, UploadFile
-from django.views.generic import ListView
 from ratelimit.decorators import ratelimit
-import os
 import csv
-from .models import Movie, SeatModel
+from .models import Movie, MovieTrailer
 from django.core.paginator import Paginator
-from django.contrib.auth.models import User
 from Schedule_app.models import ScheduledMovies
-from datetime import date
 
 # from .models import ToDoList, Item
 
@@ -97,3 +93,13 @@ def import_csv(request):
         return render(request, 'basepage/uploadcsv.html', {"form": form, "submitted": submitted})
     else:
         return HttpResponse('Feature unavaliable for standard users!')
+
+
+def movie_details(request):
+    data = request.GET['movie_data']
+    movie_data = Movie.objects.filter(title=data)
+    print(movie_data.values_list('imdb_id'))
+    video_data = MovieTrailer.objects.filter(imdb_id__in=movie_data.values_list('imdb_id'))
+    print (video_data)
+    return render(request, 'basepage/movie_details.html', {"movie": movie_data,
+                                                           "trailer": video_data})

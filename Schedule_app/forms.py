@@ -2,7 +2,7 @@ import datetime
 
 from django import forms
 from django.forms import ModelForm, Select
-from .models import ScheduledMovies, ScheduleMovieCinema
+from .models import ScheduledMovies, ScheduleMovieCinema, BookTicket
 from basepage.models import City, Cinema, CinemaHall, Movie
 from dynamic_forms import DynamicField, DynamicFormMixin
 from datetime import date
@@ -70,3 +70,9 @@ class TicketBookForm(DynamicFormMixin, forms.Form):
         forms.ModelChoiceField,
         queryset=time_choice,
     )
+
+
+class Bookings(ModelForm):
+    class Meta:
+        model = BookTicket
+        fields = '__all__'
