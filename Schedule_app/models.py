@@ -55,5 +55,7 @@ class BookTicket(models.Model):
     schedule = models.ForeignKey(ScheduleMovieCinema, on_delete=models.SET_NULL, null=True)
     seats = models.CharField(validators=[validate_comma_separated_integer_list], max_length=200,
                              blank=True, null=True, default='')
-    email_confirmed = models.BooleanField(default=False)
-    ui_confirmed = models.BooleanField(default=False)
+    book_confirmed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user} {self.schedule} {self.seats}"

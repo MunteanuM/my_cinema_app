@@ -20,11 +20,10 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from django.contrib import messages
 
-
+from .tokens import reservation_confirmation_token
 
 
 # Create your views here.
-from .tokens import reservation_confirmation_token
 
 
 def schedule_movie(response):
@@ -94,7 +93,7 @@ def seats(response):
             filter(name__icontains='cinema{}'.format(data['cinema'])) \
             .filter(name__icontains='hall{}'.format(data['hall'])). \
             order_by('id').values()
-        reserved_seats = BookTicket.objects.filter(schedule=schedule[0]['id']).values()
+        reserved_seats = BookTicket.objects.filter(schedule=schedule[0]['id'], book_confirmed=True).values()
 
         print(seats_context[0])
 
@@ -127,7 +126,7 @@ def confirmation(response):
             seats=seat_list,
             schedule_id=schedule_id,
             user_id=response.user.id,
-            ui_confirmed=True
+            book_confirmed=True
         )
         send_mail(
             subject='Your tickets',
@@ -139,24 +138,31 @@ def confirmation(response):
         )
         return HttpResponse('Booking succesfull! Check your email for your confirmation!')
     else:
-       # user = response.user
-       # current_site = get_current_site(response)
-       # subject = 'Confirm your booking'
-       # message = render_to_string('confirmseat.html', {
-       #     'user': user,
-       #     'domain': current_site.domain,
-       #     'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-       #     'token': reservation_confirmation_token.make_token(user),
-       # })
-       # to_email = user.email
-       # send_mail(
-       #     subject,
-       #     message,
-       #     settings.EMAIL_HOST_USER,
-       #     [to_email]
-       # )
-       # return HttpResponse('Check your email to confirm your seats!')
-       return HttpResponse('please go back and check te box for confimation!')
+        user = response.user
+        book = BookTicket.objects.create(
+            seats=seat_list,
+            schedule_id=schedule_id,
+            user_id=response.user.id,
+            book_confirmed=False,
+        )
+        current_site = get_current_site(response)
+        subject = 'Confirm your booking'
+        message = render_to_string('confirmseat.html', {
+            'user': user,
+            'domain': current_site.domain,
+            'uid': urlsafe_base64_encode(force_bytes(book.id)),
+            'token': reservation_confirmation_token.make_token(book),
+        })
+        to_email = user.email
+        send_mail(
+            subject,
+            message,
+            settings.EMAIL_HOST_USER,
+            [to_email]
+        )
+
+        return HttpResponse('Check your email to confirm your seats!')
+       # return HttpResponse('please go back and check te box for confimation!')
 
 
 class ConfirmBooking(View):
@@ -164,12 +170,12 @@ class ConfirmBooking(View):
     def get(self, request, uidb64, token, *args, **kwargs):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
-            user = User.objects.get(pk=uid)
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-            user = None
-
-        if user is not None and reservation_confirmation_token.check_token(user, token):
-            user.bookticket.email_confirmed=True
+            book = BookTicket.objects.get(id=uid)
+        except (TypeError, ValueError, OverflowError, BookTicket.DoesNotExist):
+            book = None
+        if book is not None and reservation_confirmation_token.check_token(book, token):
+            book.book_confirmed = True
+            book.save()
             messages.success(request, ('Your booking has been confirmed.'))
             return redirect('homepage')
         else:

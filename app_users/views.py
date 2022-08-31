@@ -74,8 +74,6 @@ class SignUpView(View):
                 settings.EMAIL_HOST_USER,
                 [to_email]
             )
-            # email = EmailMessage(subject, message, to=[to_email])
-            # email.send()
             messages.success(request, ('Please Confirm your email to complete registration.'))
 
             return redirect('homepage')
@@ -134,7 +132,7 @@ def unsubscribe(request):
     user = User.objects.filter(username=data)
     for i in user:
         if NewsletterSub.objects.filter(user=i):
-            NewsletterSub.objects.update(
+            NewsletterSub.objects.filter(user=i).update(
                 user=i,
                 subscribed=False
             )
