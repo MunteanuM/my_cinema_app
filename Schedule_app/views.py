@@ -1,3 +1,5 @@
+import csv
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
@@ -205,3 +207,14 @@ class HallList(APIView):
             halls = Cinema.objects.get(id=cinema_data).halls.all().order_by('name')
             hall_choice = {p.name: p.id for p in halls}
         return JsonResponse(data=hall_choice, safe=False)
+
+
+def download_csv(request):
+    user = request.user
+    f = open(f"{user}'s Reservations.csv", 'w', encoding="UTF-8")
+    writer = csv.writer(f)
+    writer.writerow(["user", "schedule", "seats"])
+    queryset = BookTicket.objects.filter(user=user.id)
+    for s in queryset:
+        writer.writerow([s.user, s.schedule, s.seats])
+    return redirect('homepage')
