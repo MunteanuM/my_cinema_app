@@ -29,7 +29,6 @@ class MovieTrailer(models.Model):
 
 class City(models.Model):
     city = models.CharField(max_length=200)
-    # cinemas = models.ForeignKey(Cinema, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return self.city
@@ -37,7 +36,6 @@ class City(models.Model):
 
 class Cinema(models.Model):
     address = models.CharField(max_length=200)
-    # hall = models.CharField(max_length=200)
     city = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, related_name='cinemas')
     name = models.CharField(max_length=200)
     description = models.CharField(max_length=200)

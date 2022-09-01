@@ -1,4 +1,5 @@
 import csv
+import datetime
 
 from django.contrib.sites.shortcuts import get_current_site
 from django.shortcuts import render, redirect
@@ -23,6 +24,9 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 
 from .tokens import reservation_confirmation_token
+import zoneinfo
+
+gmt = zoneinfo.ZoneInfo('Europe/Bucharest')
 
 
 # Create your views here.
@@ -88,16 +92,13 @@ def time(response):
 def seats(response):
     if response.user.is_authenticated:
         data = response.POST
-
         schedule = ScheduleMovieCinema.objects.filter(city=data['city'], cinema=data['cinema'], movie=data['movie'],
-                                                      hall=data['hall'], playing=data['time']).values()
+                                                      hall=data['hall'], playing=datetime.datetime.strptime(data['time'][0:19], '%Y-%m-%d %H:%M:%S')).values()
         seats_context = SeatModel.objects.filter(name__icontains='city{}'.format(data['city'])). \
             filter(name__icontains='cinema{}'.format(data['cinema'])) \
             .filter(name__icontains='hall{}'.format(data['hall'])). \
             order_by('id').values()
         reserved_seats = BookTicket.objects.filter(schedule=schedule[0]['id'], book_confirmed=True).values()
-
-        print(seats_context[0])
 
         for seat in seats_context:
             for i in range(len(reserved_seats)):
@@ -164,7 +165,6 @@ def confirmation(response):
         )
 
         return HttpResponse('Check your email to confirm your seats!')
-       # return HttpResponse('please go back and check te box for confimation!')
 
 
 class ConfirmBooking(View):
@@ -211,10 +211,11 @@ class HallList(APIView):
 
 def download_csv(request):
     user = request.user
-    f = open(f"{user}'s Reservations.csv", 'w', encoding="UTF-8")
-    writer = csv.writer(f)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = "attachment; filename={}'s Reservation.csv".format(user)
+    writer = csv.writer(response)
     writer.writerow(["user", "schedule", "seats"])
     queryset = BookTicket.objects.filter(user=user.id)
     for s in queryset:
         writer.writerow([s.user, s.schedule, s.seats])
-    return redirect('homepage')
+    return response
