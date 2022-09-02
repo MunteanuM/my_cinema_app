@@ -1,4 +1,4 @@
-import dajngo_filters
+import django_filters
 
 from .models import ScheduleMovieCinema
 

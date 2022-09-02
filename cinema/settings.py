@@ -48,6 +48,10 @@ INSTALLED_APPS = [
     'basepage',
     'app_users',
     'Schedule_app',
+    'django_htmx',
+    'rest_framework',
+    
+
 
 ]
 
@@ -121,7 +125,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Bucharest'
 
 USE_I18N = True
 
@@ -136,6 +140,9 @@ STATIC_URL = 'static/'
 STATIC_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 MEDIA_URL = '/images/'
 # Default primary key field type

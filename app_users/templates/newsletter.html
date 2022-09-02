@@ -1,0 +1,18 @@
+{% extends 'basepage/base.html' %}
+{% block content %}
+{% if unsubscribe %}
+<form metohd="POST" action="/users/unsubscribe/">
+    {% csrf_token%}
+    {{form.as_ul}}
+    <button type="submit" name="save">UnSubscribe</button>
+</form>
+
+
+{% else %}
+<form metohd="POST" action="/users/subscribe/">
+    {% csrf_token%}
+    {{form.as_ul}}
+    <button type="submit" name="save">Subscribe</button>
+</form>
+{% endif %}
+{% endblock %}

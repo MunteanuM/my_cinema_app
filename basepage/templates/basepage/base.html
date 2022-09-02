@@ -40,10 +40,17 @@
     {%if user.is_authenticated%}
 
     <a href="{% url 'logout_user' %}">logout</a>
-
+<br>
+    <a href="{% url 'unsub_newsletter' %}">newsletter unsubscribe</a>
+    <br>
     {%else%}
     <a href="{% url 'login_user' %}">login</a>
     <a href="{% url 'signup' %}">register</a>
     {%endif%}
+    <br>
+    <a href="{% url 'newsletter' %}">newsletter subscribe</a>
+    <br>
+
+
 </footer>
 </html>

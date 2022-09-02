@@ -1,0 +1,37 @@
+<h1>
+    Choose Seats
+</h1>
+
+<div>
+    [X] - not available
+</div>
+<br>
+Screen is here
+<br>
+<br>
+<form action = "{% url 'confirmation' %}" method = "POST">
+    {% csrf_token %}
+{% for seat in seats %}
+{{seat.id}}
+
+    {% if seat.available %}
+    <input type="checkbox" id={{seat.id}} name={{seat.name}} value={{seat.available}}>
+
+    {% else %}
+    [X]
+    {% endif %}
+
+<script>
+var initial = {{initial_seat.id}}
+var seat = {{seat.id}}
+    if( (seat - initial + 1) % 10 == 0 )
+    document.write("<br>")
+</script>
+{% endfor %}
+<br>
+     <input type="hidden" id="schedule_id" name="schedule_name" value={{schedule}}>
+<button type="submit" >Next</button>
+    <br>
+    <input type="checkbox" id="confirmation" name="confirmation" value="confirmed">
+    <label for="confirmation">By checking this box you confirm the selected seats</label>
+</form>

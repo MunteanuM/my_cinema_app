@@ -1,11 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
 
-from django.urls import reverse_lazy
-from django.views.generic import View, UpdateView
-from .forms import SignUpForm
+from django.views.generic import View
+from .forms import SignUpForm, NewsletterForm
 from django.contrib.auth.models import User
 
 from django.contrib.sites.shortcuts import get_current_site
@@ -19,7 +17,8 @@ from django.utils.encoding import force_str
 from django.core.mail import send_mail
 from django.conf import settings
 
-from django.core.mail import EmailMessage
+from django.http import HttpResponse, HttpResponseRedirect
+from .models import NewsletterSub
 
 
 def login_user(response):
@@ -33,9 +32,10 @@ def login_user(response):
         else:
 
             messages.success(response, ("Couldn't find your user, please try again!"))
-            return redirect ('login_user')
+            return redirect('login_user')
     else:
-        return render(response,'authentication/login.html', {})
+        return render(response, 'authentication/login.html', {})
+
 
 def logout_user(response):
     logout(response)
@@ -55,13 +55,12 @@ class SignUpView(View):
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         if form.is_valid():
-
             user = form.save(commit=False)
-            user.is_active = False # Deactivate account till it is confirmed
+            user.is_active = False  # Deactivate account till it is confirmed
             user.save()
 
             current_site = get_current_site(request)
-            subject = 'Activate Your MySite Account'
+            subject = 'Activate Your CinemaX Account'
             message = render_to_string('authentication/account_activation_email.html', {
                 'user': user,
                 'domain': current_site.domain,
@@ -75,13 +74,12 @@ class SignUpView(View):
                 settings.EMAIL_HOST_USER,
                 [to_email]
             )
-            #email = EmailMessage(subject, message, to=[to_email])
-            #email.send()
             messages.success(request, ('Please Confirm your email to complete registration.'))
 
             return redirect('homepage')
 
         return render(request, self.template_name, {'form': form})
+
 
 class ActivateAccount(View):
 
@@ -102,3 +100,46 @@ class ActivateAccount(View):
         else:
             messages.warning(request, ('The confirmation link was invalid, possibly because it has already been used.'))
             return redirect('homepage')
+
+
+def news_sub(request):
+    form = NewsletterForm()
+    return render(request, 'newsletter.html', {'form': form})
+
+
+def subscribe(request):
+    data = request.GET.get('email')
+    user = User.objects.filter(email__iexact=data)
+    for i in user:
+        if NewsletterSub.objects.filter(user=i):
+            NewsletterSub.objects.update(user=i,
+                                         subscribed=True)
+        else:
+            NewsletterSub.objects.create(
+                user=i,
+                subscribed=True
+            )
+    return HttpResponseRedirect('/home')
+
+
+def news_unsub(request):
+    unsub = True
+    return render(request, 'newsletter.html', {'unsubscribe': unsub})
+
+
+def unsubscribe(request):
+    data = request.user
+    user = User.objects.filter(username=data)
+    for i in user:
+        if NewsletterSub.objects.filter(user=i):
+            NewsletterSub.objects.filter(user=i).update(
+                user=i,
+                subscribed=False
+            )
+        else:
+            sub = NewsletterSub.objects.filter(
+                user=i
+            )
+            sub.delete()
+
+    return HttpResponseRedirect('/home')

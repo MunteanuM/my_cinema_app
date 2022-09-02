@@ -1,7 +1,0 @@
-<select class="custom-select">
-    <option selected>Choose your Cinema</option>
-
-    {% for cinema_op in cinema %}
-        <option value="{{cinema_op.pk}}">{{ cinema_op.name }}</option>
-    {% endfor %}
-</select>

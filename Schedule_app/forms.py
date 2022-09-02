@@ -1,8 +1,13 @@
+import datetime
+
 from django import forms
 from django.forms import ModelForm, Select
-from .models import ScheduledMovies, ScheduleMovieCinema
-from basepage.models import City, Cinema, CinemaHall
+from .models import ScheduledMovies, ScheduleMovieCinema, BookTicket
+from basepage.models import City, Cinema, CinemaHall, Movie
 from dynamic_forms import DynamicField, DynamicFormMixin
+import zoneinfo
+
+gmt = zoneinfo.ZoneInfo('Europe/Bucharest')
 
 
 class CreateSchedule(ModelForm):
@@ -18,46 +23,57 @@ class CreateScheduleCinema(ModelForm):
 
 
 class TicketBookForm(DynamicFormMixin, forms.Form):
+    city = forms.ModelChoiceField(
+        queryset=City.objects.all(),
+    )
 
     def cinema_choice(form):
         city = form['city'].value()
-        return ScheduleMovieCinema.objects.filter(city=city).values_list('cinema__name', flat=True)
+        return Cinema.objects.filter(cinemaback__city=city)
 
-    def initial_module(form):
-        city = form['city'].value()
-        return ScheduleMovieCinema.objects.filter(city=city).values_list('cinema__name', flat=True).first()
-
-    city = forms.ModelChoiceField(
-        queryset=City.objects.all(),
-        # ScheduleMovieCinema.objects.values_list('city__city', flat=True).distinct(),
-        initial=City.objects.first()
-        # ScheduleMovieCinema.objects.values_list('city__city', flat=True).distinct().first()
-    )
     cinema = DynamicField(
         forms.ModelChoiceField,
         queryset=cinema_choice,
-        initial=initial_module
     )
 
-    # class Meta:
-    # model = ScheduleMovieCinema
-    # fields = '__all__'
-    # choice = ScheduleMovieCinema.objects.all()
-    # city_query = ScheduleMovieCinema.objects.values_list('city__city', flat=True).distinct()
-    # City = forms.ModelChoiceField(queryset=city_query)
-# cinema_query = ScheduleMovieCinema.objects.filter(city__city__in=City.widget.choices())\
-# .values_list('cinema__name', flat=True).distinct()
-# cinema = forms.ModelChoiceField(queryset=cinema_query)
-#
-# movie_query = ScheduleMovieCinema.objects.values_list('movie__movie__title', flat=True).distinct()
-# movie = forms.ModelChoiceField(queryset=movie_query)
-#
-# hall_query = ScheduleMovieCinema.objects.values_list('hall__name', flat=True).distinct()
-# hall = forms.ModelChoiceField(queryset=hall_query)
+    def movie_choice(form):
+        cinema = form['cinema'].value()
+        city = form['city'].value()
+        ScheduledMovies.objects.filter(movieback__cinema=cinema, movieback__city=city)
+        return ScheduledMovies.objects.filter(movieback__cinema=cinema, movieback__city=city)
+
+    movie = DynamicField(
+        forms.ModelChoiceField,
+        queryset=movie_choice,
+    )
+
+    def hall_choice(form):
+        movie = form['movie'].value()
+        cinema = form['cinema'].value()
+        city = form['city'].value()
+        return CinemaHall.objects.filter(hallback__movie=movie, hallback__cinema=cinema, hallback__city=city)
+
+    hall = DynamicField(
+        forms.ModelChoiceField,
+        queryset=hall_choice,
+    )
+
+    def time_choice(form):
+        cinema = form['cinema'].value()
+        city = form['city'].value()
+        movie = form['movie'].value()
+        hall = form['hall'].value()
+        play = ScheduleMovieCinema.objects.filter(hall=hall, cinema=cinema, city=city, movie=movie,
+                                                  playing__gte=datetime.datetime.now()).datetimes('playing', 'second', tzinfo=gmt)
+        return play
+
+    time = DynamicField(
+        forms.ModelChoiceField,
+        queryset=time_choice,
+    )
 
 
-# cinema = forms.ModelChoiceField(choice)
-# cinema = forms.ModelChoiceField(queryset=ScheduleMovieCinema.cinema)
-# hall = forms.ModelChoiceField(queryset=ScheduleMovieCinema.hall)
-# movie = forms.ModelChoiceField(queryset=ScheduleMovieCinema.movie)
-# playing = forms.ModelChoiceField(queryset=ScheduleMovieCinema.playing)
+class Bookings(ModelForm):
+    class Meta:
+        model = BookTicket
+        fields = '__all__'
