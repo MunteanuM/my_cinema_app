@@ -117,7 +117,6 @@ def confirmation(response):
     for bookings in data:
         reservations.append(bookings)
     reservations.pop(0)
-    reservations.pop(len(reservations) - 1)
     reservations = SeatModel.objects.filter(name__in=reservations).values_list('id', flat=True)
     seat_list = ''
     for seat in reservations:

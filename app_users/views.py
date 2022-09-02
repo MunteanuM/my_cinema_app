@@ -111,7 +111,7 @@ def subscribe(request):
     data = request.GET.get('email')
     user = User.objects.filter(email__iexact=data)
     for i in user:
-        if NewsletterSub.objects.get(user=i):
+        if NewsletterSub.objects.filter(user=i):
             NewsletterSub.objects.update(user=i,
                                          subscribed=True)
         else:
@@ -137,10 +137,9 @@ def unsubscribe(request):
                 subscribed=False
             )
         else:
-            NewsletterSub.objects.create(
-                user=i,
-                subscribed=False
+            sub = NewsletterSub.objects.filter(
+                user=i
             )
-
+            sub.delete()
 
     return HttpResponseRedirect('/home')
