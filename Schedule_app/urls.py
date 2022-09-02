@@ -15,5 +15,6 @@ urlpatterns = [
     path('choose_seats/', views.seats, name='seats'),
     path('confirmation/', views.confirmation, name='confirmation'),
     path('confirmbooking/<uidb64>/<token>/', ConfirmBooking.as_view(), name='confirmbooking'),
+    path('download_bookings', views.download_csv, name='download_bookings'),
 
 ]

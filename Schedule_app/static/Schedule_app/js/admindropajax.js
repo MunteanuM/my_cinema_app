@@ -55,29 +55,6 @@ jQuery(function($){
                 },
             });
         });
-      /*  $("#id_district").change(function(){
-            $.ajax({
-                url:"/admindrop/subdistricts/",
-                type:"POST",
-                data:{district: $(this).val(),},
-                success: function(result) {
-                    console.log(result);
-                    cols = document.getElementById("id_subdistrict");
-                    cols.options.length = 0;
-                    cols.options.add(new Option("SubDistrict", "SubDistrict"));
-                    for(var k in result){
-                        cols.options.add(new Option(k, result[k]));
-                    }
-                },
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken")
-                },
-                error: function(e){
-                    console.error(JSON.stringify(e));
-                },
-            });
 
-        });
-        */
     });
 });

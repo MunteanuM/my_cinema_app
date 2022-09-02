@@ -9,9 +9,10 @@ from .models import Movie, MovieTrailer
 from django.core.paginator import Paginator
 from Schedule_app.models import ScheduledMovies
 
-# from .models import ToDoList, Item
 
 # Create your views here.
+
+
 # @ratelimit(key='ip')
 # def login(response):
 # return render(response, 'basepage/login.html', {})
@@ -66,27 +67,20 @@ def import_csv(request):
                     reader = csv.reader(file)
                     next(reader)
                     for row in reader:
-                        _, created = Movie.objects.get_or_create(
-                            poster=row[0],
-                            title=row[1],
-                            release_year=row[2],
-                            certificate=row[3],
-                            runtime=row[4],
-                            genre=row[5],
-                            imdb_rating=row[6],
-                            description=row[7],
-                            meta_score=row[8],
-                            film_director=row[9],
-                            star1=row[10],
-                            star2=row[11],
-                            star3=row[12],
-                            star4=row[13],
-                            votes=row[14],
-                            gross_earnings=row[15],
-                        )
+                        if row:
+                            _, created = Movie.objects.get_or_create(
+                                title=row[0],
+                                poster=row[1],
+                                description=row[2],
+                                release_year=row[3],
+                                film_director=row[4],
+                                imdb_link=row[5],
+                                imdb_id=row[6],
+                                imdb_rating=row[7],
+                                runtime=row[8],
+                            )
                 return HttpResponse('Done!')
         else:
-            # if request.method=="GET":
             form = UploadFile
             if 'submitted' in request.GET:
                 submitted = True
@@ -98,8 +92,6 @@ def import_csv(request):
 def movie_details(request):
     data = request.GET['movie_data']
     movie_data = Movie.objects.filter(title=data)
-    print(movie_data.values_list('imdb_id'))
     video_data = MovieTrailer.objects.filter(imdb_id__in=movie_data.values_list('imdb_id'))
-    print (video_data)
     return render(request, 'basepage/movie_details.html', {"movie": movie_data,
                                                            "trailer": video_data})
